@@ -1,0 +1,17 @@
+{
+  "name": "ssm-demo-webapp",
+  "version": "1.0.0",
+  "description": "Sleek AWS SSM System Performance & Deployment Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "systeminformation": "^5.22.9"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

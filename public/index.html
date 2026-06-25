@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSM Deployment Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="glass-bg-container">
+    <div class="blur-blob blob-cyan"></div>
+    <div class="blur-blob blob-purple"></div>
+  </div>
+
+  <main class="dashboard-wrapper">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div class="header-left">
+        <div class="logo-container">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <h1>SSM Agent Deployment</h1>
+        </div>
+        <p class="subtitle">EC2 Application Live Status & Metrics</p>
+      </div>
+      <div class="header-right">
+        <div class="status-badge">
+          <span class="status-dot pulse"></span>
+          <span id="env-badge">Production</span>
+        </div>
+        <button id="refresh-btn" class="btn btn-secondary">
+          <svg viewBox="0 0 24 24" class="icon-spin" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 11-.57-8.38l5.67-5.67"/>
+          </svg>
+          Refresh
+        </button>
+      </div>
+    </header>
+
+    <!-- Grid Layout -->
+    <section class="metrics-grid">
+      <!-- CPU Stats Card -->
+      <div class="card glass-card">
+        <div class="card-header">
+          <h3>CPU Load</h3>
+          <span class="card-icon">⚡</span>
+        </div>
+        <div class="card-body">
+          <div class="radial-progress-wrapper">
+            <svg class="radial-progress" viewBox="0 0 36 36">
+              <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path id="cpu-progress" class="circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <div class="percentage-label"><span id="cpu-percent">0</span>%</div>
+          </div>
+          <div class="card-details">
+            <p>Logical Cores: <strong id="cpu-cores">-</strong></p>
+            <p>System State: <span id="cpu-state" class="badge-active">Idle</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Memory Stats Card -->
+      <div class="card glass-card">
+        <div class="card-header">
+          <h3>Memory Utilization</h3>
+          <span class="card-icon">💾</span>
+        </div>
+        <div class="card-body">
+          <div class="linear-progress-wrapper">
+            <div class="linear-progress-labels">
+              <span id="mem-used">0 GB</span>
+              <span id="mem-total">0 GB</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div id="mem-progress" class="progress-bar-fill" style="width: 0%"></div>
+            </div>
+            <div class="percentage-large"><span id="mem-percent">0</span>% Used</div>
+          </div>
+          <div class="card-details">
+            <p>Buffer / Cache: <span>Included</span></p>
+            <p>Memory Pressure: <span id="mem-pressure" class="status-ok">Normal</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- OS and Server Info Card -->
+      <div class="card glass-card">
+        <div class="card-header">
+          <h3>Instance Details</h3>
+          <span class="card-icon">☁️</span>
+        </div>
+        <div class="card-body system-details">
+          <div class="detail-row">
+            <span class="detail-label">Platform:</span>
+            <span class="detail-value" id="sys-platform">-</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">OS Distro:</span>
+            <span class="detail-value text-glow" id="sys-distro">-</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Release:</span>
+            <span class="detail-value" id="sys-release">-</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Uptime:</span>
+            <span class="detail-value" id="sys-uptime">-</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Terminal Log Terminal Console -->
+    <section class="terminal-section glass-card">
+      <div class="terminal-header">
+        <div class="terminal-dots">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <div class="terminal-title">SSM Agent Deployment Logs</div>
+        <div class="terminal-actions">
+          <span class="terminal-badge">LIVE REPL</span>
+        </div>
+      </div>
+      <div class="terminal-body" id="terminal-output">
+        <div class="terminal-line"><span class="cmd-prompt">root@ec2-ssm-agent:~#</span> ssm-agent-daemon --status</div>
+        <div class="terminal-line text-success">SSM agent is active (running) and listening for Command Documents...</div>
+        <div class="terminal-line"><span class="cmd-prompt">root@ec2-ssm-agent:~#</span> tail -f /var/log/amazon/ssm/errors.log</div>
+        <div class="terminal-line text-muted">Listening for incoming GitHub Actions dispatch commands...</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="dashboard-footer">
+    <p>Powered by AWS Systems Manager &bull; Deployment Version <span id="app-version">1.0.0</span></p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
