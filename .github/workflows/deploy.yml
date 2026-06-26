@@ -77,7 +77,6 @@ jobs:
                       "sudo -u ssm-user git -C /opt/sample-ssm-app checkout BRANCH_PLACEHOLDER",
                       "sudo -u ssm-user git -C /opt/sample-ssm-app reset --hard origin/BRANCH_PLACEHOLDER",
                       "sudo docker compose -f deployments/docker/docker-compose.yml down --remove-orphans || true",
-                      "sudo docker rm -f sample-ssm-app || true",
                       "sudo docker compose -f deployments/docker/docker-compose.yml pull",
                       "sudo docker compose -f deployments/docker/docker-compose.yml up -d --force-recreate",
                       "sudo docker image prune -f"
