@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  AWS_REGION: us-east-1                  # Replace with your AWS Region
+  AWS_REGION: ap-south-1                  # Replace with your AWS Region
   INSTANCE_ID: i-0123456789abcdef0       # Replace with your EC2 Instance ID (e.g. from GitHub Secrets or hardcoded)
   ECR_REPOSITORY: ssm-demo-app           # Replace with your ECR Repository Name
 
@@ -23,12 +23,11 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+              role-to-assume: arn:aws:iam::839792743414:role/GitHubActionsRole
+              aws-region: ap-south-1
 
       - name: Log in to Amazon ECR
         id: login-ecr
@@ -69,10 +68,11 @@ jobs:
                 "git fetch --all",
                 "git checkout BRANCH_PLACEHOLDER",
                 "git pull origin BRANCH_PLACEHOLDER",
-                "docker compose down",
-                "docker compose pull",
-                "docker compose up -d --remove-orphans",
-                "docker system prune -af"
+                "sudo docker compose down --remove-orphans || true",
+                "sudo docker rm -f sample-ssm-app || true",
+                "sudo docker compose pull",
+                "sudo docker compose up -d --force-recreate",
+                "sudo docker image prune -f"
               ]
             }
           }
