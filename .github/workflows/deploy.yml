@@ -62,7 +62,7 @@ jobs:
             "Parameters": {
               "commands": [
                 "set -e",
-                "cd ~/Workflow-and-Workers/deployments/docker",
+                "cd /opt/sample-ssm-app/deployments/docker",
                 "ACCOUNT_ID=\$(aws sts get-caller-identity --query Account --output text)",
                 "ECR_URL=\${ACCOUNT_ID}.dkr.ecr.REGION_PLACEHOLDER.amazonaws.com",
                 "aws ecr get-login-password --region REGION_PLACEHOLDER | docker login --username AWS --password-stdin \${ECR_URL}",
