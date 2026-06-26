@@ -67,6 +67,7 @@ jobs:
               "commands": [
                       "set -e",
                       "cd /opt/sample-ssm-app",
+                      "export HOME=/root",
                       "git config --global --add safe.directory /opt/sample-ssm-app",
                       "ACCOUNT_ID=\$(aws sts get-caller-identity --query Account --output text)",
                       "ECR_URL=\${ACCOUNT_ID}.dkr.ecr.REGION_PLACEHOLDER.amazonaws.com",
