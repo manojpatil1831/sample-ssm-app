@@ -1,5 +1,6 @@
- services:
+services:
   web:
+    container_name: sample-ssm-app
     image: 839792743414.dkr.ecr.ap-south-1.amazonaws.com/sample-ssm-app:latest
     ports:
       - "80:3000"
