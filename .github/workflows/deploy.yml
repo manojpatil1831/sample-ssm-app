@@ -65,22 +65,21 @@ jobs:
             "Comment": "Backend deploy branch=${BRANCH} sha=${{ github.sha }}",
             "Parameters": {
               "commands": [
-               "set -e",
-                "cd /opt/sample-ssm-app/deployments/docker",
-                "ACCOUNT_ID=\$(aws sts get-caller-identity --query Account --output text)",
-                "ECR_URL=\${ACCOUNT_ID}.dkr.ecr.REGION_PLACEHOLDER.amazonaws.com",
-                "export ECR_URL",
-                "aws ecr get-login-password --region REGION_PLACEHOLDER | sudo docker login --username AWS --password-stdin \${ECR_URL}",
-                "cd /opt/sample-ssm-app",
-                "git fetch --all",
-                "git checkout BRANCH_PLACEHOLDER",
-                "git pull origin BRANCH_PLACEHOLDER",
-                "cd deployments/docker",
-                "sudo docker compose down --remove-orphans || true",
-                "sudo docker rm -f sample-ssm-app || true",
-                "sudo docker compose pull",
-                "sudo docker compose up -d --force-recreate",
-                "sudo docker image prune -f"
+                      "set -e",
+                      "cd /opt/sample-ssm-app",
+                      "git config --global --add safe.directory /opt/sample-ssm-app",
+                      "ACCOUNT_ID=\$(aws sts get-caller-identity --query Account --output text)",
+                      "ECR_URL=\${ACCOUNT_ID}.dkr.ecr.REGION_PLACEHOLDER.amazonaws.com",
+                      "export ECR_URL",
+                      "aws ecr get-login-password --region REGION_PLACEHOLDER | sudo docker login --username AWS --password-stdin \${ECR_URL}",
+                      "git fetch origin",
+                      "git checkout BRANCH_PLACEHOLDER",
+                      "git reset --hard origin/BRANCH_PLACEHOLDER",
+                      "sudo docker compose -f deployments/docker/docker-compose.yml down --remove-orphans || true",
+                      "sudo docker rm -f sample-ssm-app || true",
+                      "sudo docker compose -f deployments/docker/docker-compose.yml pull",
+                      "sudo docker compose -f deployments/docker/docker-compose.yml up -d --force-recreate",
+                      "sudo docker image prune -f"
               ]
             }
           }
