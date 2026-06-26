@@ -7,18 +7,21 @@ on:
   workflow_dispatch:
 
 env:
-  AWS_REGION: ap-south-1                  # Replace with your AWS Region
-  INSTANCE_ID: i-0123456789abcdef0       # Replace with your EC2 Instance ID (e.g. from GitHub Secrets or hardcoded)
-  ECR_REPOSITORY: ssm-demo-app           # Replace with your ECR Repository Name
+  AWS_REGION: ap-south-1
+  INSTANCE_ID: i-09634f100215d68e2
+  ECR_REPOSITORY: sample-ssm-app        
 
 permissions:
+  id-token: write
   contents: read
-
 jobs:
   deploy:
+    permissions:
+      id-token: write
+      contents: read
+
     name: Build & Deploy
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -43,6 +46,8 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
+              echo "Image pushed successfully"
+
       - name: Dispatch SSM deploy command
         shell: bash
         run: |
@@ -60,14 +65,17 @@ jobs:
             "Comment": "Backend deploy branch=${BRANCH} sha=${{ github.sha }}",
             "Parameters": {
               "commands": [
-                "set -e",
+               "set -e",
                 "cd /opt/sample-ssm-app/deployments/docker",
                 "ACCOUNT_ID=\$(aws sts get-caller-identity --query Account --output text)",
                 "ECR_URL=\${ACCOUNT_ID}.dkr.ecr.REGION_PLACEHOLDER.amazonaws.com",
-                "aws ecr get-login-password --region REGION_PLACEHOLDER | docker login --username AWS --password-stdin \${ECR_URL}",
+                "export ECR_URL",
+                "aws ecr get-login-password --region REGION_PLACEHOLDER | sudo docker login --username AWS --password-stdin \${ECR_URL}",
+                "cd /opt/sample-ssm-app",
                 "git fetch --all",
                 "git checkout BRANCH_PLACEHOLDER",
                 "git pull origin BRANCH_PLACEHOLDER",
+                "cd deployments/docker",
                 "sudo docker compose down --remove-orphans || true",
                 "sudo docker rm -f sample-ssm-app || true",
                 "sudo docker compose pull",
